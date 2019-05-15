@@ -10,7 +10,6 @@ YELP_LIMIT = 20
 
 YELP_URL = "https://api.yelp.com/v3/businesses/search"
 YELP_API_KEY = os.environ['YELP_API_KEY'] 
-YELP_API_KEY = "s9ubWgZUY8dY0JgMaAKe7W_YeKLhKfHh7Rzp4_vW6wos3TfGPJ308X_xIYdz4ecnZwUOIyWCXSerpd3-QmRJP9GPNgSKGNgayZc-3rZu8NkHW_25bv8vKEwdXx3cXHYx"
 YELP_HEADERS = {'Authorization':'Bearer '+YELP_API_KEY}
 
 def is_request_valid(request):
@@ -45,8 +44,3 @@ def happy_taps():
 	text="HAPPY HOURRRRRR!!!!!!",
 	attachments=[{'pretext':bar_pretext,'image_url':bar_pic,'title':bar_name,'title_link':bar_url}]
     )
-
-#    return jsonify(
-#        response_type='in_channel',
-#        text='<https://youtu.be/frszEJb0aOo|General Kenobi!>',
-#    )
