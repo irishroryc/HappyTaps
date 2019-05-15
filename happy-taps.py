@@ -1,5 +1,4 @@
 import os
-from yelp.client import Client
 from flask import abort, Flask, jsonify, request
 import requests
 import random
