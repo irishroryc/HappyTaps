@@ -8,12 +8,15 @@ app = Flask(__name__)
 YELP_LIMIT = 20
 
 YELP_URL = "https://api.yelp.com/v3/businesses/search"
-YELP_API_KEY = os.environ['YELP_API_KEY'] 
+#YELP_API_KEY = os.environ['YELP_API_KEY'] 
+YELP_API_KEY = "s9ubWgZUY8dY0JgMaAKe7W_YeKLhKfHh7Rzp4_vW6wos3TfGPJ308X_xIYdz4ecnZwUOIyWCXSerpd3-QmRJP9GPNgSKGNgayZc-3rZu8NkHW_25bv8vKEwdXx3cXHYx" 
 YELP_HEADERS = {'Authorization':'Bearer '+YELP_API_KEY}
 
 def is_request_valid(request):
-    is_token_valid = request.form['token'] == os.environ['SLACK_VERIFICATION_TOKEN']
-    is_team_id_valid = request.form['team_id'] == os.environ['SLACK_TEAM_ID']
+    #is_token_valid = request.form['token'] == os.environ['SLACK_VERIFICATION_TOKEN']
+    #is_team_id_valid = request.form['team_id'] == os.environ['SLACK_TEAM_ID']
+    is_token_valid = request.form['token'] == "b9SYbM3MYQ5xX9ykCFtpRDxd" 
+    is_team_id_valid = request.form['team_id'] == "T0HPVTNKU" 
 
     print("token_valid = ",is_token_valid)
     print("team_valid = ",is_team_id_valid)
@@ -21,7 +24,7 @@ def is_request_valid(request):
     return is_token_valid and is_team_id_valid
 
 
-@app.route('/happy-taps', methods=['POST'])
+@app.route('/happytaps', methods=['POST'])
 def happy_taps():
     if not is_request_valid(request):
         abort(400)
@@ -39,7 +42,7 @@ def happy_taps():
     bar_pic = bar['image_url']
     bar_pretext = "Let's drink some dranks near "+YELP_LOCATION+", what do you think about this?"
     return jsonify(
-	response_type='inchannel',
+	response_type='in_channel',
 	text="HAPPY HOURRRRRR!!!!!!",
 	attachments=[{'pretext':bar_pretext,'image_url':bar_pic,'title':bar_name,'title_link':bar_url}]
     )
