@@ -4,7 +4,6 @@ from flask import Flask, request
 # Can override with 'entrypoint' in app.yaml if desired
 app = Flask(__name__)
 
-@app.route('/')
-@app.route('/index.html')
+@app.route('/web/index')
 def welcome():
-    return "Welcome!"
+    return "Welcome from the WEB!"
