@@ -31,6 +31,12 @@ def happy_taps():
         YELP_LOCATION = request.form['text']
     else:
         YELP_LOCATION = 'NYC'
+
+    keepalive = {"text":"Mixing up some suggestions...",
+                "username": "bot"}
+
+    requests.post(request.form.get("response_url"),data=json.dumps(keepalive)) 
+
     YELP_PARAMS = {'location':YELP_LOCATION,'term':'bar','limit':YELP_LIMIT,'price':'1,2,3',}
     r = requests.get(url = YELP_URL, headers=YELP_HEADERS, params=YELP_PARAMS)
     data = r.json()

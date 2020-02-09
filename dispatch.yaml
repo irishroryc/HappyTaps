@@ -8,5 +8,5 @@ dispatch:
     service: web
 
   # Default service serves simple hostname request.
-  - url: "www.happytaps.net/"
+  - url: "www.happytaps.net/*"
     service: www
