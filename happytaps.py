@@ -8,15 +8,12 @@ app = Flask(__name__)
 YELP_LIMIT = 20
 
 YELP_URL = "https://api.yelp.com/v3/businesses/search"
-#YELP_API_KEY = os.environ['YELP_API_KEY'] 
-YELP_API_KEY = "s9ubWgZUY8dY0JgMaAKe7W_YeKLhKfHh7Rzp4_vW6wos3TfGPJ308X_xIYdz4ecnZwUOIyWCXSerpd3-QmRJP9GPNgSKGNgayZc-3rZu8NkHW_25bv8vKEwdXx3cXHYx" 
+YELP_API_KEY = os.environ['YELP_API_KEY'] 
 YELP_HEADERS = {'Authorization':'Bearer '+YELP_API_KEY}
 
 def is_request_valid(request):
-    #is_token_valid = request.form['token'] == os.environ['SLACK_VERIFICATION_TOKEN']
-    #is_team_id_valid = request.form['team_id'] == os.environ['SLACK_TEAM_ID']
-    is_token_valid = request.form['token'] == "b9SYbM3MYQ5xX9ykCFtpRDxd" 
-    is_team_id_valid = request.form['team_id'] == "T0HPVTNKU" 
+    is_token_valid = request.form['token'] == os.environ['SLACK_VERIFICATION_TOKEN']
+    is_team_id_valid = request.form['team_id'] == os.environ['SLACK_TEAM_ID']
 
     print("token_valid = ",is_token_valid)
     print("team_valid = ",is_team_id_valid)
