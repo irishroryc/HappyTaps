@@ -34,7 +34,10 @@ def happy_taps():
     YELP_PARAMS = {'location':YELP_LOCATION,'term':'bar','limit':YELP_LIMIT,'price':'1,2,3',}
     r = requests.get(url = YELP_URL, headers=YELP_HEADERS, params=YELP_PARAMS)
     data = r.json()
-    random_choice = random.randint(0,YELP_LIMIT)
+    random_limit = YELP_LIMIT
+    if len(data['businesses']) < YELP_LIMIT:
+        random_limit = len(data['businesses'])
+    random_choice = random.randint(0,random_limit)
     bar = data['businesses'][random_choice]
     bar_name = bar['name']
     bar_url = bar['url']
