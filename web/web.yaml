@@ -3,4 +3,4 @@ service: web
 
 env_variables:
         HT_CLIENT_ID: "879979531745.945744536726"
-        HT_CLIENT_SECRET: "0ef7bcdc307ab58633ce81cc871c6002"
+        HT_CLIENT_SECRET: "TEST"
