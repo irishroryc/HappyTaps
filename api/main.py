@@ -1,3 +1,4 @@
+import threading
 import os
 from flask import abort, Flask, jsonify, request
 import requests
@@ -27,33 +28,48 @@ def is_request_valid(request):
 def happy_taps():
     if not is_request_valid(request):
         abort(400)
+    
+    req_location = None
     if request.form['text']:
-        YELP_LOCATION = request.form['text']
+        req_location = request.form['text']
     else:
-        YELP_LOCATION = 'NYC'
+        req_location = 'NYC'
 
-    keepalive = {"text":"Mixing up some suggestions...",
-                "username": "bot"}
+    req_url = request.form.get('response_url')
 
-    requests.post(request.form.get("response_url"),data=json.dumps(keepalive)) 
+    yelp_thread = threading.Thread(
+        target = find_taps,
+        args=(req_url,req_location)
+    )
+    yelp_thread.start()
 
-    YELP_PARAMS = {'location':YELP_LOCATION,'term':'bar','limit':YELP_LIMIT,'price':'1,2,3',}
+    return "One watering hole coming right up!"
+
+def find_taps(response_url, yelp_location):
+    YELP_PARAMS = {'location':yelp_location,'term':'bar','limit':YELP_LIMIT,'price':'1,2,3',}
     r = requests.get(url = YELP_URL, headers=YELP_HEADERS, params=YELP_PARAMS)
     data = r.json()
+    
     random_limit = YELP_LIMIT
     if len(data['businesses']) < YELP_LIMIT:
         random_limit = len(data['businesses'])
+    
     random_choice = random.randint(0,random_limit)
+    
     bar = data['businesses'][random_choice]
     bar_name = bar['name']
     bar_url = bar['url']
     bar_pic = bar['image_url']
-    bar_pretext = "Let's drink some dranks near "+YELP_LOCATION+", what do you think about this?"
-    return jsonify(
-	response_type='in_channel',
-	text="HAPPY HOURRRRRR!!!!!!",
-	attachments=[{'pretext':bar_pretext,'image_url':bar_pic,'title':bar_name,'title_link':bar_url}]
-    )
+    bar_pretext = "Let's drink some dranks near "+yelp_location+", what do you think about this?"
+    
+    tap_data = {
+        'response_type':'in_channel',
+        'text':"HAPPY HOURRRRRR!!!!!!",
+        'attachments':[{'pretext':bar_pretext,'image_url':bar_pic,'title':bar_name,'title_link':bar_url}]
+    }
+
+    result = requests.post(response_url,json=tap_data)
+    print("DEBUG: result = :",result.status_code)
 
 if __name__ == '__main__':
     # This is used when running locally only. When deploying to Google App
