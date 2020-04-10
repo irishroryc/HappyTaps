@@ -4,6 +4,12 @@ from flask import abort, Flask, jsonify, request
 import requests
 import random
 
+try:
+  import googleclouddebugger
+  googleclouddebugger.enable()
+except ImportError:
+  pass
+
 # App Engine looks for an an app called 'app' in main.py
 # Can override with 'entrypoint' in app.yaml if desired
 app = Flask(__name__)
