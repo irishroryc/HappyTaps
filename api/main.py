@@ -3,7 +3,7 @@ import os
 from flask import abort, Flask, jsonify, request
 import requests
 import random
-from google.cloud import secretmanager_v1
+import secretmanager_v1
 
 try:
   import googleclouddebugger
