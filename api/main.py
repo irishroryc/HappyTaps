@@ -3,6 +3,7 @@ import os
 from flask import abort, Flask, jsonify, request
 import requests
 import random
+from google.cloud import secretmanager_v1
 
 try:
   import googleclouddebugger
@@ -17,7 +18,13 @@ app = Flask(__name__)
 # Defining constants to be used in app
 YELP_LIMIT = 20
 YELP_URL = "https://api.yelp.com/v3/businesses/search"
-YELP_API_KEY = os.environ['YELP_API_KEY'] 
+#YELP_API_KEY = os.environ['YELP_API_KEY'] 
+#YELP_HEADERS = {'Authorization':'Bearer '+YELP_API_KEY}
+
+# Using Google secrets manager to populate YELP_API_KEY
+secret_client = secretmanager_v1.SecretManagerServiceClient()
+secret_path = secret_client.secret_version_path('clear-router-191420','YELP_API_KEY',1)
+YELP_API_KEY = secret_client.access_secret_version(secret_path).payload.data.decode("utf-8")
 YELP_HEADERS = {'Authorization':'Bearer '+YELP_API_KEY}
 
 def is_request_valid(request):
@@ -55,6 +62,10 @@ def find_taps(response_url, yelp_location):
     YELP_PARAMS = {'location':yelp_location,'term':'bar','limit':YELP_LIMIT,'price':'1,2,3',}
     r = requests.get(url = YELP_URL, headers=YELP_HEADERS, params=YELP_PARAMS)
     data = r.json()
+
+    # TODO:
+    # Need to handle bad status codes from Yelp - example: LOCATION_NOT_FOUND
+    # 400 error
     
     random_limit = YELP_LIMIT
     if len(data['businesses']) < YELP_LIMIT:
