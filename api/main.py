@@ -3,7 +3,8 @@ import os
 from flask import abort, Flask, jsonify, request
 import requests
 import random
-import secretmanager_v1
+from google.cloud import secretmanager_v1
+
 
 try:
   import googleclouddebugger
@@ -22,7 +23,7 @@ YELP_URL = "https://api.yelp.com/v3/businesses/search"
 #YELP_HEADERS = {'Authorization':'Bearer '+YELP_API_KEY}
 
 # Using Google secrets manager to populate YELP_API_KEY
-secret_client = secretmanager_v1.SecretManagerServiceClient()
+secret_client = secretmanager.SecretManagerServiceClient()
 secret_path = secret_client.secret_version_path('clear-router-191420','YELP_API_KEY',1)
 YELP_API_KEY = secret_client.access_secret_version(secret_path).payload.data.decode("utf-8")
 YELP_HEADERS = {'Authorization':'Bearer '+YELP_API_KEY}
