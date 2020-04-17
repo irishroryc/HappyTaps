@@ -4,13 +4,18 @@ from flask import abort, Flask, jsonify, request
 import requests
 import random
 from google.cloud import secretmanager_v1
-
+import googlecloudprofiler
 
 try:
   import googleclouddebugger
   googleclouddebugger.enable()
 except ImportError:
   pass
+
+try:
+    googlecloudprofiler.start(service="service_api",verbose=3)
+except (ValueError, NotImplementedError) as exc:
+    print(exc) # Handle errors here
 
 # App Engine looks for an an app called 'app' in main.py
 # Can override with 'entrypoint' in app.yaml if desired
