@@ -5,6 +5,10 @@ import requests
 import random
 from google.cloud import secretmanager_v1
 import googlecloudprofiler
+from opencensus.ext.stackdriver import trace_exporter as stackdriver_exporter
+import opencensus.trace.tracer
+
+
 
 try:
   import googleclouddebugger
@@ -33,6 +37,17 @@ secret_path = secret_client.secret_version_path('clear-router-191420','YELP_API_
 YELP_API_KEY = secret_client.access_secret_version(secret_path).payload.data.decode("utf-8")
 YELP_HEADERS = {'Authorization':'Bearer '+YELP_API_KEY}
 
+
+def initialize_tracer():
+    print("DEBUG: Running initialize_tracer()")
+    exporter =
+    stackdriver_exporter.StackdriverExporter()
+    tracer = opencensus.trace.tracer.Tracer(
+        exporter=exporter,
+        sampler=opencensus.trace.tracer.samplers.AlwaysOnSampler()
+    )
+    return tracer
+
 def is_request_valid(request):
     is_token_valid = request.form['token'] == os.environ['SLACK_VERIFICATION_TOKEN']
     is_team_id_valid = request.form['team_id'] == os.environ['SLACK_TEAM_ID']
@@ -45,6 +60,8 @@ def is_request_valid(request):
 
 @app.route('/happytaps', methods=['POST'])
 def happy_taps():
+    tracer = app.config['TRACER']
+    tracer.start_span(name='happytaps')
     if not is_request_valid(request):
         abort(400)
     
@@ -62,9 +79,12 @@ def happy_taps():
     )
     yelp_thread.start()
 
+    tracer.end_span()
     return "One watering hole coming right up!"
 
 def find_taps(response_url, yelp_location):
+    tracer = app.config['TRACER']
+    tracer.start_span(name='find_taps')
     YELP_PARAMS = {'location':yelp_location,'term':'bar','limit':YELP_LIMIT,'price':'1,2,3',}
     r = requests.get(url = YELP_URL, headers=YELP_HEADERS, params=YELP_PARAMS)
     data = r.json()
@@ -93,8 +113,12 @@ def find_taps(response_url, yelp_location):
 
     result = requests.post(response_url,json=tap_data)
     print("DEBUG: result = :",result.status_code)
+    tracer.end_span()
 
 if __name__ == '__main__':
+    # Define tracer without a project, this will be picked up automatically in GCP
+    tracer = initialize_tracer()
+    app.config['TRACER'] = tracer
     # This is used when running locally only. When deploying to Google App
     # Engine, a webserver process such as Gunicorn will serve the app. This
     # can be configured by adding an `entrypoint` to app.yaml.
