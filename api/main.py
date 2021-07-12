@@ -60,6 +60,7 @@ def is_request_valid(request):
 @app.route('/interactive-endpoint', methods=['POST'])
 def print_payload():
     print(request.url, request.headers, request.body)
+    return
 
 @app.route('/happytaps', methods=['POST'])
 def happy_taps():
