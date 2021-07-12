@@ -57,6 +57,9 @@ def is_request_valid(request):
 
     return is_token_valid and is_team_id_valid
 
+@app.route('/interactive-endpoint', methods=['POST'])
+def print_payload():
+    print(request.url, request.headers, request.body)
 
 @app.route('/happytaps', methods=['POST'])
 def happy_taps():
@@ -65,11 +68,9 @@ def happy_taps():
     if not is_request_valid(request):
         abort(400)
     
-    req_location = None
+    req_location = 'NYC'
     if request.form['text']:
         req_location = request.form['text']
-    else:
-        req_location = 'NYC'
 
     req_url = request.form.get('response_url')
 
