@@ -57,10 +57,10 @@ def is_request_valid(request):
 
     return is_token_valid and is_team_id_valid
 
-@app.route('/interactive-endpoint', methods=['POST'])
+@app.route('/slack-interactive', methods=['POST'])
 def print_payload():
     print(request.url, request.headers, request.body)
-    return
+    return 200
 
 @app.route('/happytaps', methods=['POST'])
 def happy_taps():
