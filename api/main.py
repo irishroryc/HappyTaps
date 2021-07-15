@@ -59,8 +59,17 @@ def is_request_valid(request):
 
 @app.route('/slack-interactive', methods=['POST'])
 def print_payload():
-    print(request.url, request.headers, request.body)
-    return 200
+    tracer = app.config['TRACER']
+    tracer.start_span(name='slack-interactive')
+    print("DEBUG: request.url = ",request.url)
+    print("DEBUG: request.data = ",request.data)
+    print("DEBUG: request.args = ",request.args)
+    print("DEBUG: request.form = ",request.form)
+    print("DEBUG: request.endpoint = ",request.endpoint)
+    print("DEBUG: request.method = ",request.method)
+    print("DEBUG: requets.body =",request.body)
+    tracer.end_span()
+    return ''
 
 @app.route('/happytaps', methods=['POST'])
 def happy_taps():
