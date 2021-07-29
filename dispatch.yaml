@@ -1,10 +1,10 @@
 dispatch:
   # Default service serves the typical web resources and all static resources.
-  - url: "*/happytaps"
+  - url: "*/happytaps*"
     service: api
 
   # Default service serves the typical web resources and all static resources.
-  - url: "*/slack-interactive"
+  - url: "*/slack-interactive*"
     service: api
 
   # Default service serves simple hostname request.

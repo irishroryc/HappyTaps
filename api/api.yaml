@@ -1,4 +1,4 @@
-runtime: python37
+runtime: python39
 service: api
 env_variables:
   YELP_API_KEY: "s9ubWgZUY8dY0JgMaAKe7W_YeKLhKfHh7Rzp4_vW6wos3TfGPJ308X_xIYdz4ecnZwUOIyWCXSerpd3-QmRJP9GPNgSKGNgayZc-3rZu8NkHW_25bv8vKEwdXx3cXHYx"
