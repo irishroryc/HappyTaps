@@ -1,4 +1,5 @@
 set_keys.sh
-happytaps-frontend/deploy_image_gcp.sh
+deploy_image_gcp.sh
 venv/
 requirements.txt_bak
+clear-router-191420-443155da253d.json

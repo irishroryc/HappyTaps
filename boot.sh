@@ -1,3 +1,3 @@
 #!/bin/sh
 source venv/bin/activate
-flask run
+python happytaps-frontend.py
