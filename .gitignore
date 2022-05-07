@@ -1,1 +1,7 @@
 set_keys.sh
+deploy_image_gcp.sh
+venv/
+requirements.txt_bak
+keys/
+Dockerfile_public
+Dockerfile_private
