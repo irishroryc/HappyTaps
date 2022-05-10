@@ -4,20 +4,25 @@ from slack_bolt.context.respond.respond import Respond
 import requests
 import random
 import json
+from google.cloud import datastore
+from datetime import datetime, timedelta, timezone
 
+# Define values to be used with Yelp Fusion API calls
 YELP_URL = "https://api.yelp.com/v3/businesses/search"
 YELP_LIMIT = 20
-
 yelp_api_key = os.environ.get("YELP_API_KEY")
 yelp_headers = {'Authorization':'Bearer '+yelp_api_key}
-yelp_list = {}
 
+# Creates a Slack app instance
 app = App(
 	token=os.environ.get("SLACK_BOT_TOKEN"),
 	signing_secret=os.environ.get("SLACK_SIGNING_SECRET")
 )
 
-# The echo command simply echoes on command
+# Instantiates a Google datastore client
+datastore_client = datastore.Client()
+
+# HappyTaps command entrypoint
 @app.command("/happytaps")
 def happy_taps(ack, body, respond):
     ack("One watering hole coming up!")
@@ -28,20 +33,44 @@ def happy_taps(ack, body, respond):
 
     response_url = str(respond.response_url)
     find_taps(response_url, yelp_location)
-    return
 
+# Function to update business list in Cloud Datastore
+def update_taps(yelp_location, updated_businesses):
+    # Define key for datastore
+    data_key = datastore_client.key("HappyTaps",yelp_location)
 
+    # Define element to be updated in datastore
+    # Must exclude 'businesses' from indexes as values are too long
+    data_element = datastore.Entity(key=data_key, exclude_from_indexes=(['businesses']))
+    data_element.update({
+        "businesses":updated_businesses,
+        "timestamp":datetime.now(tz=timezone.utc)
+    })
+
+    # Saves the entity to datastore
+    datastore_client.put(data_element)
+
+# Function to generate bar suggestion for Slack
 def find_taps(response_url, yelp_location):
+    # Respond object used to send results back to Slack
     respond = Respond(response_url=response_url)
 
-    if yelp_location in yelp_list:
-        yelp_businesses = yelp_list[yelp_location]
+    # Attempt to get data from datastore for this location
+    data_key = datastore_client.key("HappyTaps",yelp_location)
+    data_response = datastore_client.get(data_key)
 
+    # If data is up to date in datastore, use this for response
+    if data_response is not None and (data_response['timestamp'] > datetime.now(tz=timezone.utc) + timedelta(weeks = -2)):
+        yelp_businesses = data_response['businesses']
+
+    # Otherwise we need to pull new business list from Yelp
     else:
+        # Format and make request to Yelp API
         yelp_params = {'location':yelp_location,'term':'bar','limit':YELP_LIMIT,'price':'1,2,3',}
         r = requests.get(url = YELP_URL, headers=yelp_headers, params=yelp_params)
         yelp_data = r.json()
-            
+
+        # Respond with error message if no businesses come back from Yelp
         if 'businesses' not in yelp_data:
             respond(
                 {
@@ -67,13 +96,16 @@ def find_taps(response_url, yelp_location):
                 }
             )
             return
+        # If there are businesses, update in datastore and use for reponse
         else:
-            yelp_list[yelp_location] = yelp_data['businesses']
+            update_taps(yelp_location, yelp_data['businesses'])
             yelp_businesses = yelp_data['businesses']
     
+    # Ensure we don't exceed size of array when getting random bar
     num_businesses = len(yelp_businesses)
-
     random_choice = random.randint(0,num_businesses-1)
+
+    # Pull bar at random and send reponse to Slack
     bar = yelp_businesses[random_choice]
     bar_name = bar['name']
     bar_url = bar['url']
