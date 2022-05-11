@@ -6,6 +6,11 @@ This simple backend for a slash command will lookup the top 20 bars near the loc
 Usage:
 /happytaps [Location]
 
+For example:
+/happytaps greenpoint
+
+Would yield something like this:
+
 ![screenshot](https://github.com/irishroryc/HappyTaps/blob/master/happytaps_screenshot.png?raw=true)
 
 ## Technical details
