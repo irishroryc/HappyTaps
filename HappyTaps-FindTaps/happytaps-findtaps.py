@@ -5,7 +5,7 @@ import random
 import json
 from google.cloud import datastore, pubsub_v1
 from datetime import datetime, timedelta, timezone
-from flask import Flask, request
+from flask import Flask, request, abort
 
 app = Flask(__name__)
 
@@ -71,7 +71,7 @@ def find_taps():
                         ]
                 }
             )
-            return
+            return 'Ok', 200
         # If there are businesses, update in datastore and use for reponse
         else:
             update_taps(yelp_location, yelp_data['businesses'])
@@ -122,7 +122,7 @@ def find_taps():
             ]
         }
     )
-    return 'OK', 200
+    return 'Ok', 200
 
 
 # Function to update business list in Cloud Datastore
