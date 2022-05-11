@@ -12,5 +12,5 @@ RUN venv/bin/pip install -r requirements.txt
 COPY happytaps-findtaps.py happytaps-findtaps.py
 COPY boot.sh boot.sh
 
-EXPOSE 5000
+EXPOSE 3000
 ENTRYPOINT ["./boot.sh"]

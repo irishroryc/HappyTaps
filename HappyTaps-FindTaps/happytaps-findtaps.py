@@ -23,14 +23,13 @@ datastore_client = datastore.Client()
 @app.route('/findtaps', methods=['POST'])
 # Function to generate bar suggestion for Slack
 def find_taps():
-    attributes = request.form['attributes']
-    print("Attributes type - ",type(attributes))
-    for i in attributes.key():
-        print("key = ",i)
+    # Save attributes from pubsub push subscription message
+    data = request.json
+    attributes = data['message']['attributes']
 
-    # Respond object used to send results back to Slack
+    # Create respond object and set yelp_location from pubsub message
     respond = Respond(response_url=attributes['response_url'])
-    yelp_location = attributes['yelp_location']
+    yelp_location = attributes['location']
 
     # Attempt to get data from datastore for this location
     data_key = datastore_client.key("HappyTaps",yelp_location)
@@ -123,6 +122,7 @@ def find_taps():
             ]
         }
     )
+    return 'OK', 200
 
 
 # Function to update business list in Cloud Datastore
@@ -145,4 +145,4 @@ def update_taps(yelp_location, updated_businesses):
 
 # Start your app
 if __name__ == "__main__":
-    app.run(port=int(os.environ.get("PORT", 3000)))
+    app.run(port=int(os.environ.get("PORT", 3000)),debug=True)
