@@ -3,9 +3,10 @@ certifi==2021.10.8
 charset-normalizer==2.0.12
 google-api-core==2.7.3
 google-auth==2.6.6
-google-cloud-core==2.3.0
-google-cloud-datastore==2.5.1
+google-cloud==0.34.0
+google-cloud-pubsub==2.12.0
 googleapis-common-protos==1.56.0
+grpc-google-iam-v1==0.12.4
 grpcio==1.46.0
 grpcio-status==1.46.0
 idna==3.3
@@ -17,5 +18,5 @@ requests==2.27.1
 rsa==4.8
 six==1.16.0
 slack-bolt==1.13.1
-slack-sdk==3.16.0
+slack-sdk==3.16.1
 urllib3==1.26.9
