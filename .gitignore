@@ -1,9 +1,9 @@
 set_keys.sh
-./HappyTaps-FrontEnd/deploy_image_gcp.sh
-./HappyTaps-FindTaps/deploy_image_gcp.sh
-./HappyTaps-FrontEnd/venv/
-./HappyTaps-FindTaps/venv/
-./HappyTaps-FindTaps/__pycache__/
+HappyTaps-FrontEnd/deploy_image_gcp.sh
+HappyTaps-FindTaps/deploy_image_gcp.sh
+HappyTaps-FrontEnd/venv/
+HappyTaps-FindTaps/venv/
+HappyTaps-FindTaps/__pycache__/
 keys/
 Dockerfile_public
 Dockerfile_private
