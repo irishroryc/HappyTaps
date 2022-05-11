@@ -6,6 +6,8 @@ This simple backend for a slash command will lookup the top 20 bars near the loc
 Usage:
 /happytaps [Location]
 
+![screenshot](https://github.com/irishroryc/HappyTaps/blob/master/happytaps_screenshot.png?raw=true)
+
 ## Technical details
 
 This code is deployed as two containerized apps on GCP Cloud Run.
