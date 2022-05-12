@@ -1,12 +1,42 @@
 import os
+import logging
 from slack_bolt import App
+from slack_bolt.oauth.oauth_settings import OAuthSettings
+from slack_oauth_datastore import GoogleDatastoreInstallationStore, GoogleDatastoreOAuthStateStore
+from google.cloud.datastore import Client
 from google.cloud import pubsub_v1
 
+datastore_client: Client = Client()
 
-# Creates a Slack app instance
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO)
+
+my_install_store = GoogleDatastoreInstallationStore(
+        datastore_client=datastore_client,
+        datastore_bot_kind = "HappyTaps-Bot",
+        datastore_installation_kind = "HappyTaps-Installation",
+        client_id=os.environ["SLACK_CLIENT_ID"],
+        logger=logger,
+    )
+
+my_state_store = GoogleDatastoreOAuthStateStore(
+        datastore_client=datastore_client,
+        datastore_state_kind="HappyTaps-OAuthStateStore",
+        expiration_seconds=600,
+        logger=logger,
+    )
+
+oauth_settings = OAuthSettings(
+    client_id=os.environ["SLACK_CLIENT_ID"],
+    client_secret=os.environ["SLACK_CLIENT_SECRET"],
+    scopes=["commands", "incoming-webhook"],
+    installation_store=my_install_store,
+    state_store=my_state_store
+)
+
 app = App(
-	token=os.environ.get("SLACK_BOT_TOKEN"),
-	signing_secret=os.environ.get("SLACK_SIGNING_SECRET")
+    signing_secret=os.environ["SLACK_SIGNING_SECRET"],
+    oauth_settings=oauth_settings
 )
 
 # Initialize pubsub
