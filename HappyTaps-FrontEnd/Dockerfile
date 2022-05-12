@@ -10,6 +10,7 @@ RUN python -m venv venv
 RUN venv/bin/pip install -r requirements.txt
 
 COPY happytaps-frontend.py happytaps-frontend.py
+COPY slack_oauth_datastore.py slack_oauth_datastore.py
 COPY boot.sh boot.sh
 
 EXPOSE 3000
