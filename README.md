@@ -5,3 +5,22 @@ This simple backend for a slash command will lookup the top 20 bars near the loc
 
 Usage:
 /happytaps [Location]
+
+For example:
+/happytaps greenpoint
+
+Would yield something like this:
+
+![screenshot](https://github.com/irishroryc/HappyTaps/blob/master/happytaps_screenshot.png?raw=true)
+
+## Technical details
+
+This code is deployed as two containerized apps on GCP Cloud Run.
+
+The frontend serves requests from Slack, it basically just sends an ack back and then publishes information to pubsub for subsequent processing.
+
+The findtaps service has a push subscription enabled from pubsub, once it receives a message it will lookup bars in the area and return information for one of them to the Slack channel where the request was initiated.
+
+Below is a network architecture diagram detailing how this all works together.  Enjoy!
+
+![network diagram](https://github.com/irishroryc/HappyTaps/blob/master/happytaps_architecture.png?raw=true)
