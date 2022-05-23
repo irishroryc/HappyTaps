@@ -3,7 +3,7 @@ from slack_bolt.context.respond.respond import Respond
 import requests
 import random
 import json
-from google.cloud import datastore, pubsub_v1
+from google.cloud import datastore
 from datetime import datetime, timedelta, timezone
 from flask import Flask, request, abort
 
