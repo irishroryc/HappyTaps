@@ -24,3 +24,13 @@ The findtaps service has a push subscription enabled from pubsub, once it receiv
 Below is a network architecture diagram detailing how this all works together.  Enjoy!
 
 ![network diagram](https://github.com/irishroryc/HappyTaps/blob/master/happytaps_architecture.png?raw=true)
+
+## Observability
+
+In order to get a better sense of where time is spent within the happytaps-findtaps service I have added Open Telemetry instrumentation to the code.
+
+This provides visibility into time spent on external API calls to Yelp Fusion, as well as time spent updating cached business information in datastore.
+
+![image](https://user-images.githubusercontent.com/20443817/170841740-f89c3a71-2040-4fb9-adde-3d5d89c62e84.png)
+
+This could prove useful when looking to optimize performance in the future.
