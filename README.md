@@ -34,3 +34,9 @@ This provides visibility into time spent on external API calls to Yelp Fusion, a
 ![image](https://user-images.githubusercontent.com/20443817/170841740-f89c3a71-2040-4fb9-adde-3d5d89c62e84.png)
 
 This could prove useful when looking to optimize performance in the future.
+
+## Try it out!
+
+Feel free to install the application yourself and give it a shot in your Slack workspace!
+
+[![Add to Slack](https://platform.slack-edge.com/img/add_to_slack.png)](https://slack.com/oauth/v2/authorize?state=0cef27aa-a680-4ea6-bc55-2fe986277606&client_id=879979531745.945744536726&scope=commands,incoming-webhook&user_scope=)
