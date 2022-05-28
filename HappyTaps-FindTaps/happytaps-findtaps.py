@@ -3,7 +3,7 @@ from slack_bolt.context.respond.respond import Respond
 import requests
 import random
 import json
-from google.cloud import datastore
+from google.cloud import datastore, pubsub_v1
 from datetime import datetime, timedelta, timezone
 from flask import Flask, request, abort
 
@@ -18,6 +18,10 @@ yelp_headers = {'Authorization':'Bearer '+yelp_api_key}
 
 # Instantiates a Google datastore client
 datastore_client = datastore.Client()
+
+# Initialize pubsub
+publisher = pubsub_v1.PublisherClient()
+pubsub_topic = 'projects/clear-router-191420/topics/store-taps'
 
 # Route decorator specifying path for API call
 @app.route('/findtaps', methods=['POST'])
@@ -74,8 +78,10 @@ def find_taps():
             return 'Ok', 200
         # If there are businesses, update in datastore and use for reponse
         else:
-            update_taps(yelp_location, yelp_data['businesses'])
             yelp_businesses = yelp_data['businesses']
+            #update_taps(yelp_location, yelp_data['businesses'])
+            future = publisher.publish(pubsub_topic,b'StoreTaps',yelp_location=yelp_location,updated_businesses=json.dumps(yelp_businesses))
+            
     
     # Ensure we don't exceed size of array when getting random bar
     num_businesses = len(yelp_businesses)

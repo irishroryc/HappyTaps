@@ -20,7 +20,7 @@ def store_taps():
     data = request.json
     attributes = data['message']['attributes']
     yelp_location = str(attributes['yelp_location'])
-    updated_businesses = str(attributes['updated_businesses'])
+    updated_businesses = json.loads(str(attributes['updated_businesses']))
     logging.info("yelp_location: "+yelp_location)
     logging.info("updated_businesses: "+updated_businesses)
 
