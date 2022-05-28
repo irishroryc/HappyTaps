@@ -1,11 +1,15 @@
 set_keys.sh
 HappyTaps-FrontEnd/deploy_image_gcp.sh
 HappyTaps-FindTaps/deploy_image_gcp.sh
+HappyTaps-StoreTaps/deploy_image_gcp.sh
 HappyTaps-FrontEnd/venv/
 HappyTaps-FindTaps/venv/
+HappyTaps-StoreTaps/venv/
 HappyTaps-FindTaps/__pycache__/
+HappyTaps-StoreTaps/__pycache__/
 keys/
 Dockerfile_public
 Dockerfile_private
 pubsub_test.py
 datastore_test.py
+HappyTaps-FindTaps/requirements.txt.bak
