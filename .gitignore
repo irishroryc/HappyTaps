@@ -12,3 +12,4 @@ Dockerfile_public
 Dockerfile_private
 pubsub_test.py
 datastore_test.py
+HappyTaps-FindTaps/requirements.txt.bak
