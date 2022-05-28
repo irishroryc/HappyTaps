@@ -5,14 +5,17 @@ from datetime import datetime, timezone
 from flask import Flask, request
 from google.cloud import datastore
 
+# Intitialize Flask app that exposes endpoint for pubsub FindTaps subscription
 app = Flask(__name__)
 
+# Define logger and set log level
+logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
 # Instantiates a Google datastore client
 datastore_client = datastore.Client()
 
-
+# Flask app decorator defining route for storetaps endpoint
 @app.route('/storetaps', methods=['POST'])
 # Function to update business list in Cloud Datastore
 def store_taps():

@@ -7,8 +7,12 @@ from google.cloud import datastore, pubsub_v1
 from datetime import datetime, timedelta, timezone
 from flask import Flask, request, abort
 
+# Intitialize Flask app that exposes endpoint for pubsub FindTaps subscription
 app = Flask(__name__)
 
+# Define logger and set log level
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO)
 
 # Define values to be used with Yelp Fusion API calls
 YELP_URL = "https://api.yelp.com/v3/businesses/search"
@@ -40,7 +44,7 @@ def find_taps():
     data_response = datastore_client.get(data_key)
 
     # If data is up to date in datastore, use this for response
-    if data_response is not None and (data_response['timestamp'] > datetime.now(tz=timezone.utc) + timedelta(weeks = -2)):
+    if data_response is not None and (data_response['timestamp'] > datetime.now(tz=timezone.utc) + timedelta(days = -1)):
         yelp_businesses = data_response['businesses']
 
     # Otherwise we need to pull new business list from Yelp
@@ -79,8 +83,7 @@ def find_taps():
         # If there are businesses, update in datastore and use for reponse
         else:
             yelp_businesses = yelp_data['businesses']
-            #update_taps(yelp_location, yelp_data['businesses'])
-            future = publisher.publish(pubsub_topic,b'StoreTaps',yelp_location=yelp_location,updated_businesses=json.dumps(yelp_businesses))
+            update_taps(yelp_location, yelp_data['businesses'])
             
     
     # Ensure we don't exceed size of array when getting random bar
