@@ -3,12 +3,41 @@ from slack_bolt.context.respond.respond import Respond
 import requests
 import random
 import json
-from google.cloud import datastore, pubsub_v1
+import logging
+from google.cloud import datastore
 from datetime import datetime, timedelta, timezone
 from flask import Flask, request, abort
 
+# Tracing
+from opentelemetry import trace
+from opentelemetry.exporter.cloud_trace import CloudTraceSpanExporter
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
+from opentelemetry.instrumentation.flask import FlaskInstrumentor
+from opentelemetry.propagate import set_global_textmap
+from opentelemetry.propagators.cloud_trace_propagator import (
+    CloudTraceFormatPropagator,
+)
+
+set_global_textmap(CloudTraceFormatPropagator())
+    
+tracer_provider = TracerProvider()
+cloud_trace_exporter = CloudTraceSpanExporter()
+tracer_provider.add_span_processor(
+    # BatchSpanProcessor buffers spans and sends them in batches in a
+    # background thread. The default parameters are sensible, but can be
+    # tweaked to optimize your performance
+    BatchSpanProcessor(cloud_trace_exporter)
+)
+trace.set_tracer_provider(tracer_provider)
+
+tracer = trace.get_tracer(__name__)
+
 # Intitialize Flask app that exposes endpoint for pubsub FindTaps subscription
 app = Flask(__name__)
+
+# Instrument Flask app for open telemetry tracing
+FlaskInstrumentor().instrument_app(app)
 
 # Define logger and set log level
 logger = logging.getLogger(__name__)
@@ -23,10 +52,6 @@ yelp_headers = {'Authorization':'Bearer '+yelp_api_key}
 # Instantiates a Google datastore client
 datastore_client = datastore.Client()
 
-# Initialize pubsub
-publisher = pubsub_v1.PublisherClient()
-pubsub_topic = 'projects/clear-router-191420/topics/store-taps'
-
 # Route decorator specifying path for API call
 @app.route('/findtaps', methods=['POST'])
 # Function to generate bar suggestion for Slack
@@ -37,7 +62,7 @@ def find_taps():
 
     # Create respond object and set yelp_location from pubsub message
     respond = Respond(response_url=attributes['response_url'])
-    yelp_location = attributes['location']
+    yelp_location = attributes['location'].lower()
 
     # Attempt to get data from datastore for this location
     data_key = datastore_client.key("HappyTaps",yelp_location)
@@ -51,7 +76,8 @@ def find_taps():
     else:
         # Format and make request to Yelp API
         yelp_params = {'location':yelp_location,'term':'bar','limit':YELP_LIMIT,'price':'1,2,3',}
-        r = requests.get(url = YELP_URL, headers=yelp_headers, params=yelp_params)
+        with tracer.start_span("yelp_api_call") as yelp_span:
+            r = requests.get(url = YELP_URL, headers=yelp_headers, params=yelp_params)
         yelp_data = r.json()
 
         # Respond with error message if no businesses come back from Yelp
@@ -83,7 +109,9 @@ def find_taps():
         # If there are businesses, update in datastore and use for reponse
         else:
             yelp_businesses = yelp_data['businesses']
-            update_taps(yelp_location, yelp_data['businesses'])
+            with tracer.start_span("update_taps") as update_taps_span:
+                update_taps(yelp_location, yelp_data['businesses'])
+                update_taps_span.set_attribute("num_businesses",len(yelp_data['businesses']))
             
     
     # Ensure we don't exceed size of array when getting random bar
